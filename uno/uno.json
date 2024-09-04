@@ -1,0 +1,15 @@
+{
+  "data": {
+    "fullDeck": [],
+    "gameStart": false,
+    "turn": ""
+  },
+  "player1": {
+    "hand": [],
+    "online": false
+  },
+  "player2": {
+    "hand": [],
+    "online": false
+  }
+}
