@@ -2,11 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const fs = require('fs');
-
+const hexAbc = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"];
+const numbers = ["0","1","2","3","4","5","6","7","8","9","Skip","Reverse","+2","","+4", ""];
+const colors = ["Red", "Yellow", "Blue", "Green", "Wild"];
 const app = express();
 
+let deck = [];
+
 // Use CORS middleware to allow cross-origin requests
-app.use(cors());
+app.use(cors({ origin: '*' }));
 
 app.use(bodyParser.json());
 
@@ -31,22 +35,37 @@ function getRandomInt(max) {
     return Math.floor(Math.random() * max);
 }
 
+
+function dealCards(){
+    for(let i = 0; i < 7; i++){
+        player1.push(deck.pop()); player2.push(deck.pop());
+    } 
+} 
+function refreshJson(){
+    jsonData = JSON.parse(fs.readFileSync('uno.json', 'utf-8'));
+}
+
+function uploadJson(){
+  fs.writeFileSync('uno.json', JSON.stringify(jsonData, null, 2));
+}
+
+
+
 function createDeck(){
     
     for(let i = 0; i < 4; i++){
-        deckCur.push(i+"0")
+        jsonData.data.deck.push(i+"0")
         for(let j = 1; j < 13; j++){
             for(let k = 0; k < 2; k++){
                 char1 = i.toString();
                 char2 = hexAbc[j];
                 toAdd = char1.concat(char2);
-                deckCur.push(toAdd);
+                jsonData.data.deck.push(toAdd);
             }
         }
     }
-    //deckCur.push("4D","4D","4D","4D","4E","4E","4E","4E");
+    //jsonData.data.deck.push("4D","4D","4D","4D","4E","4E","4E","4E");
 }
-
 
 // Endpoint to signal the end of a player's turn
 app.post('/end-turn', (req, res) => {
@@ -113,5 +132,6 @@ app.get('/get-data', (req, res) => {
 const port = 3000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
+    createDeck();
 });
 

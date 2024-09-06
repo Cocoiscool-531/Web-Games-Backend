@@ -2,6 +2,7 @@
   "data": {
     "fullDeck": [],
     "gameStart": false,
+    "discard": "",
     "turn": ""
   },
   "player1": {
