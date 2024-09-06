@@ -6,10 +6,10 @@
   },
   "player1": {
     "hand": [],
-    "online": false
+    "online": true
   },
   "player2": {
     "hand": [],
-    "online": false
+    "online": true
   }
 }

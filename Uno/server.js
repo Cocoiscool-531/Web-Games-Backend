@@ -1,8 +1,13 @@
 const express = require('express');
-const fs = require('fs');
+const cors = require('cors');
 const bodyParser = require('body-parser');
+const fs = require('fs');
 
 const app = express();
+
+// Use CORS middleware to allow cross-origin requests
+app.use(cors());
+
 app.use(bodyParser.json());
 
 // Load the JSON file
@@ -26,9 +31,47 @@ function getRandomInt(max) {
     return Math.floor(Math.random() * max);
 }
 
+function createDeck(){
+    
+    for(let i = 0; i < 4; i++){
+        deckCur.push(i+"0")
+        for(let j = 1; j < 13; j++){
+            for(let k = 0; k < 2; k++){
+                char1 = i.toString();
+                char2 = hexAbc[j];
+                toAdd = char1.concat(char2);
+                deckCur.push(toAdd);
+            }
+        }
+    }
+    //deckCur.push("4D","4D","4D","4D","4E","4E","4E","4E");
+}
+
+
+// Endpoint to signal the end of a player's turn
+app.post('/end-turn', (req, res) => {
+    jsonData = JSON.parse(fs.readFileSync('uno.json', 'utf-8'));
+
+    const player = req.body.player || req.query.player; // Get player from form data or query parameter
+
+    if (player === 'player1' || player === 'player2') {
+
+        // Optionally, you can decide whose turn is next, for example:
+        jsonData.data.turn = player === 'player1' ? 'player2' : 'player1';
+
+        // Save the updated JSON file
+        fs.writeFileSync('uno.json', JSON.stringify(jsonData, null, 2));
+
+        res.send({ success: true, message: `${player}'s turn is over`, nextTurn: jsonData.data.turn });
+    } else {
+        res.status(400).send({ success: false, message: 'Invalid player specified' });
+    }
+});
 
 // Endpoint to update player data
 app.post('/update-player', (req, res) => {
+    jsonData = JSON.parse(fs.readFileSync('uno.json', 'utf-8'));
+
     const { player, hand, online } = req.body;
 
     if (player === 'player1' || player === 'player2') {
@@ -46,6 +89,8 @@ app.post('/update-player', (req, res) => {
 
 // Endpoint to update and send data object
 app.post('/update-data', (req, res) => {
+    jsonData = JSON.parse(fs.readFileSync('uno.json', 'utf-8'));
+
     const { fullDeck, turn } = req.body;
 
     jsonData.data.fullDeck = fullDeck || jsonData.data.fullDeck;
@@ -59,6 +104,8 @@ app.post('/update-data', (req, res) => {
 
 // Endpoint to get the current state
 app.get('/get-data', (req, res) => {
+    jsonData = JSON.parse(fs.readFileSync('uno.json', 'utf-8'));
+
     res.send(jsonData);
 });
 
